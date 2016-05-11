@@ -150,7 +150,7 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
   #计算从1900-1-1到当前的天数
   beginDate = "1900-1-1"
   endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
-  cur_days =  lib_help.datediff(beginDate,endDate)
+  cur_days =  lib_help.datediff_ex(beginDate,endDate)
   cur_days += 2
 
   #查询所有和要求天数相同的所有经济指标的行号

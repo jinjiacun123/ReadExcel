@@ -60,19 +60,24 @@ def get_unit(unit_flag):
     return f.read('unitconf', unit_flag)
 
 #两个日期相隔多少天，例：2008-10-03和2008-10-01是相隔两天  
-def datediff(beginDate,endDate):  
-    format="%Y-%m-%d";  
-    bd=strtodatetime(beginDate,format)  
-    ed=strtodatetime(endDate,format)      
-    oneday=datetime.timedelta(days=1)  
-    count=0
-    while bd!=ed:  
-        ed=ed-oneday  
-        count+=1
-    return count 
-def strtodatetime(datestr,format):
-    return datetime.datetime.strptime(datestr,format)
-    
+# def datediff(beginDate,endDate):
+#     format="%Y-%m-%d";
+#     bd=strtodatetime(beginDate,format)
+#     ed=strtodatetime(endDate,format)
+#     oneday=datetime.timedelta(days=1)
+#     count=0
+#     while bd!=ed:
+#         ed=ed-oneday
+#         count+=1
+#     return count
+# def strtodatetime(datestr,format):
+#     return datetime.datetime.strptime(datestr,format)
+
+def datediff_ex(beginDate,endDate):
+    begin = time.mktime(time.strptime(beginDate,"%Y-%m-%d"))
+    end = time.mktime(time.strptime(endDate,"%Y-%m-%d"))
+    return int((end-begin)/86400)
+
 #获取提交数据url
 def get_post_data_url():
     f = Db_Connector("my.ini")
