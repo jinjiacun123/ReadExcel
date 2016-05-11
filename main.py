@@ -130,7 +130,7 @@ def my_do(row):
         }
        
        
-    logging.info('%s %s %s %s %s %s %s %s'%(eci, title, before ,prediction, result, country, rank, time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())) ))
+    logging.info('%s %s %s %s %s %s %s %s'%(eci, title, before ,prediction, result, country, rank, release_date))
      #提交测试环境
     if(is_debug == False):
        print lib_help.eci_data_post(url, data)
@@ -146,7 +146,7 @@ def my_do(row):
       lib_help.write_csv("my.csv", csv_list)
 
 #预处理,获取当天需要处理的行数
-def pretreatment(xl, begin_row, end_row, target_col):
+def pretreatment(xl, begin_row, end_row, target_col, result_col):
   #计算从1900-1-1到当前的天数
   beginDate = "1900-1-1"
   endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
@@ -156,7 +156,7 @@ def pretreatment(xl, begin_row, end_row, target_col):
   #查询所有和要求天数相同的所有经济指标的行号
   line_no_list = {}
 
-  for i in range(begin_row, end_row):
+  for i in range(begin_row, end_row+1):
     try:
         days = str(xl.Cells(i, target_col).value).strip()
     except Exception,e:
@@ -169,7 +169,13 @@ def pretreatment(xl, begin_row, end_row, target_col):
         continue
     days = int(days)
     if(cur_days == days):
-      line_no_list[i] = lib_excel.excel_table_row_byindex_dynamic(xl, i)
+        try:
+            result = str(xl.Cells(i, result_col).value).strip()
+        except Exception,e:
+            continue
+        if('' == result):
+            continue
+        line_no_list[i] = lib_excel.excel_table_row_byindex_dynamic(xl, i)
   return line_no_list
   
 
@@ -209,16 +215,18 @@ def main():
   begin_row = 4
   end_row = lib_excel.get_table_rows()
   target_col = 6
+  result_col = 5
   xl = win32com.client.Dispatch("Excel.Application")
   #预处理
-  row_list = pretreatment(xl, begin_row, end_row, target_col)
+  row_list = pretreatment(xl, begin_row, end_row, target_col, result_col)
   for k in row_list:
       my_do(row_list[k])
   #预跑十遍
-  for i in range(10):
-      for k in row_list:
-         data = lib_excel.excel_table_row_byindex_dynamic(xl, k)
-         my_do(data)
+  # run_times = 10
+  # for i in range(run_times):
+  #     for k in row_list:
+  #        data = lib_excel.excel_table_row_byindex_dynamic(xl, k)
+  #        my_do(data)
 
 
 if __name__ == '__main__':
@@ -234,3 +242,4 @@ if __name__ == '__main__':
          end = time.clock()
          print "time:%.03f\n"%(end-begin)
          print "end"
+         logging.info('run time:%.03f\n'%(end-begin))
