@@ -7,23 +7,36 @@ from config import Db_Connector
 
 #读取经济指标对应国家
 def get_eci_country(eci):
-     f = Db_Connector("country.ini")
+     f = Db_Connector("eci.ini")
      return f.read('baseconf', eci)
 
 #读取经济指标对应标题
 def get_eci_title(eci):
-    f = Db_Connector("title.ini")
-    return f.read('baseconf', eci)
+    f = Db_Connector("eci.ini")
+    return f.read('titleconf', eci)
     
 #读取经济指标对应星级
 def get_eci_rank(eci):
-    f = Db_Connector("rank.ini")
-    return f.read('baseconf', eci)
+    f = Db_Connector("eci.ini")
+    return f.read('rankconf', eci)
+
+#读取经济指标对应计量单位
+def get_eci_unit(eci):
+    f = Db_Connector("eci.ini")
+    return f.read('unitconf', eci)
 
 #写入经济指标发布时间
 def set_eci_date(eci,date):
     f = Db_Connector("eci.ini")
     f.write('baseconf', eci, date)
+
+#写入经济指标基本值
+def set_eci_basic(country_l, rank_l, title_l, unit_l):
+    f = Db_Connector("eci.ini")
+    f.mul_write('countryconf',country_l)
+    f.mul_write('rankconf',rank_l)
+    f.mul_write('titleconf', title_l)
+    f.mul_write('unitconf', unit_l)
 
 #查询经济指标发布时间
 def get_eci_date(eci):

@@ -7,6 +7,7 @@ import thread
 import threading
 import time
 import math
+import lib_help
 #from Queue import Queue
 from multiprocessing import Process, Queue 
 reload(sys) 
@@ -21,6 +22,27 @@ def open_excel(file= 'file.xls'):
 
 #根据索引获取Excel表格中的数据   参数:file：Excel文件路径     colnameindex：表头列名所在行的所以  ，by_index：表的索引
 def excel_table_byindex(file= 'get_rt_data.xls',colnameindex=0,by_index=0):
+    data = open_excel(file)
+    table = data.sheets()[by_index]
+    nrows = table.nrows #行数
+    ncols = table.ncols #列数
+    colnames =  table.row_values(colnameindex) #某一行数据
+    #print colnames[0]
+    #print colnames
+    list =[]
+    for rownum in range(3,nrows):
+         row = table.row_values(rownum)
+         index = 0
+         if row:
+             app = {}
+             for i in range(0,len(colnames)):
+                 app[i] = str(row[i]).strip()
+             list.append(app)
+             index=index+1
+    return list
+
+#初始化基本数据
+def excel_table_byindex_init_basicdata(file= 'get_rt_data.xls',colnameindex=0,by_index=0):
     data = open_excel(file)
     table = data.sheets()[by_index]
     nrows = table.nrows #行数
@@ -92,7 +114,7 @@ def excel_table_byindex_dynamic(file= 'get_rt_data.xls', colnameindex=0,by_index
     return list
 
 def excel_table_row_byindex_dynamic(xl, row_index):
-    col_title = ('A','B','C','D','E','F','G','H','I','J','K','K')   
+    col_title = ('A','B','C','D','E','F','G','H','I','J','K','K')
     #print colnames[0]
     #print colnames
     # print work_book.Cells(3,1).value
@@ -101,8 +123,36 @@ def excel_table_row_byindex_dynamic(xl, row_index):
     list =[]
     
     index = row_index
+    eci = ''
+    country = ''
+    unit = ''
+    title = ''
+    rank = ''
+    tag = 'A'+str(index)
+    try:
+        eci = str(xl.Range(tag).value).strip()
+    except Exception,e:
+        print e
+        return {}
+    eci = eci[0:4]
     app = {}
     for i in range(0,len(col_title)):
+        if('A' == col_title[i]):#eci
+            app[i] = eci
+            continue
+        elif('H' == col_title[i]):#unit
+            app[i] = lib_help.get_eci_unit(eci)
+            continue
+        elif('I' == col_title[i]):#country
+            app[i] = lib_help.get_eci_country(eci)
+            continue
+        elif('J' == col_title[i]):#title
+            app[i] = lib_help.get_eci_title(eci)
+            continue
+        elif('K' == col_title[i]):#rank
+            app[i] = lib_help.get_eci_rank(eci)
+            continue
+
         try:
            tag_title = col_title[i]+str(index)
         except Exception, e:

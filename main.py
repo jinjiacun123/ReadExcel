@@ -178,6 +178,21 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
         line_no_list[i] = lib_excel.excel_table_row_byindex_dynamic(xl, i)
   return line_no_list
   
+#初始化
+def my_init():
+    tables = lib_excel.excel_table_byindex_init_basicdata()
+    country_l = {}
+    rank_l = {}
+    title_l = {}
+    unit_l = {}
+    for row in tables:
+        eci = row[0]
+        eci = eci[0:4]
+        unit_l[eci] = row[7]
+        country_l[eci] = row[8]
+        title_l[eci] = row[9]
+        rank_l[eci]  = row[10]
+    lib_help.set_eci_basic(country_l, rank_l, title_l, unit_l)
 
 def main_mul():
     #获取提交数据url
@@ -235,7 +250,7 @@ if __name__ == '__main__':
     # #main_simple()
     # end = time.clock()
     # print "time:%.03f\n"%(end-begin)
-
+     my_init()
      while True:
          begin = time.clock()
          main()
