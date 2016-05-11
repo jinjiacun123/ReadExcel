@@ -29,7 +29,12 @@ class Db_Connector:
     def write(self, pre, opt, data):
         self.cf.set(pre, opt, data)
         self.cf.write(open(self.fd, "w"))
- 
+
+    def mul_write(self, pre, data_list):
+        for k in data_list:
+            self.cf.set(pre, k, data_list[k])
+        self.cf.write(open(self.fd, "w"))
+
      #read
     def read(self, pre, opt):
         if self.cf.has_option(pre, opt):

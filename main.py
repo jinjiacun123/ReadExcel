@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.DEBUG,
 #获取提交数据url
 url = lib_help.get_post_data_url()
 is_debug = False
-# whnd = ctypes.windll.kernel32.GetConsoleWindow()  
+# whnd = ctypes.windll.kernel32.GetConsoleWindow()
 # if whnd != 0:  
 #     ctypes.windll.user32.ShowWindow(whnd, 0)  
 #     ctypes.windll.kernel32.CloseHandle(whnd)
@@ -150,7 +150,7 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
   #计算从1900-1-1到当前的天数
   beginDate = "1900-1-1"
   endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
-  cur_days =  lib_help.datediff_ex(beginDate,endDate)
+  cur_days =  lib_help.datediff(beginDate,endDate)
   cur_days += 2
 
   #查询所有和要求天数相同的所有经济指标的行号
@@ -161,6 +161,9 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
         days = str(xl.Cells(i, target_col).value).strip()
     except Exception,e:
         # print e
+        continue
+    if('' == days or \
+        '#N/A *The record could not be found'==days):
         continue
     try:
         days = float(days)
