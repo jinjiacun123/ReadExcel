@@ -1,0 +1,14 @@
+inux上运行很简单：
+复制代码 代码如下:
+
+$ python service_mgr.py
+
+Windows上以后台进程运行：
+复制代码 代码如下:
+
+> start pythonw service_mgr.py
+
+代码中需要修改：
+复制代码 代码如下:
+
+run_forever(["python", "testpipe.py"])  
