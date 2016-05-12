@@ -186,7 +186,10 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
 
 #检查此条指标当天是否发布过
 def check_is_public(xl, target_row):
-    eci = str(xl.Cells(target_row, 1).value).strip()
+    try:
+        eci = str(xl.Range('A'+str(target_row)).value).strip()
+    except Exception,e:
+        return False
     eci = eci[0:-4]
     ini_eci_date_str = lib_help.get_eci_date(eci)
     if('' == ini_eci_date_str):
