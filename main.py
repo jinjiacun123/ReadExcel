@@ -36,7 +36,7 @@ def my_do(row):
         eci = row[0]
     except Exception, e:
         return
-    eci = eci[0:-4]
+    #eci = eci[0:-4]
     if('*The record could not be found'==row[1] or \
       'Access Denied: User req to PE(122)' ==row[1] or \
       'Access Denied: User req to PE(5022)' == row[1] or \
@@ -80,8 +80,7 @@ def my_do(row):
     title   = row[9]
     country = row[8]
     #title   = country+title
-     
-     
+
     #获取星级
     rank    = int(round(float(row[10])))
 #       ($title, $before, $prediction, $result, $country, $rank=1)
@@ -136,7 +135,7 @@ def my_do(row):
        print lib_help.eci_data_post(url, data)
     print 'send '+eci+"\n"
     if(is_debug == False):
-      time.sleep(1)
+      time.sleep(0.01)
 
     #加入数据到csv
     if(is_debug == True):
@@ -148,19 +147,19 @@ def my_do(row):
 #预处理,获取当天需要处理的行数
 def pretreatment(xl, begin_row, end_row, target_col, result_col):
   #计算从1900-1-1到当前的天数
-  beginDate = "1900-1-1"
+  beginDate = "2016-2-25"
   endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
   cur_days =  lib_help.datediff(beginDate,endDate)
-  cur_days += 2
+  cur_days += 42425
 
   #查询所有和要求天数相同的所有经济指标的行号
   line_no_list = {}
-
   for i in range(begin_row, end_row+1):
     try:
-        days = str(xl.Cells(i, target_col).value).strip()
+        days = str(xl.Cells(i, target_col).Value).strip()
+        #days = str(xl.Range('F'+str(i)).value).strip()
     except Exception,e:
-        # print e
+        print e
         continue
     if('' == days or \
         '#N/A *The record could not be found'==days):
@@ -171,6 +170,7 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
         # print e
         continue
     days = int(days)
+
     if(cur_days == days):
         try:
             result = str(xl.Cells(i, result_col).value).strip()
@@ -178,9 +178,29 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
             continue
         if('' == result):
             continue
+        #判定是否发布过
+        if(check_is_public(xl, i)):
+            continue
         line_no_list[i] = lib_excel.excel_table_row_byindex_dynamic(xl, i)
   return line_no_list
-  
+
+#检查此条指标当天是否发布过
+def check_is_public(xl, target_row):
+    eci = str(xl.Cells(target_row, 1).value).strip()
+    eci = eci[0:-4]
+    ini_eci_date_str = lib_help.get_eci_date(eci)
+    if('' == ini_eci_date_str):
+        return False
+    ini_eci_date_l = ini_eci_date_str.split(' ')
+    ini_eci_date = ini_eci_date_l[0]
+    cur_date = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+    # print 'cur_date:%s\n'%(cur_date)
+    # print 'ini_eci_date:%s\n'%(ini_eci_date)
+    if(0 == lib_help.datediff(cur_date, ini_eci_date)):
+        return True
+    return False
+
+
 #初始化
 def my_init():
     tables = lib_excel.excel_table_byindex_init_basicdata()
@@ -190,7 +210,7 @@ def my_init():
     unit_l = {}
     for row in tables:
         eci = row[0]
-        eci = eci[0:4]
+        eci = eci[0:-4]
         unit_l[eci] = row[7]
         country_l[eci] = row[8]
         title_l[eci] = row[9]
@@ -237,8 +257,10 @@ def main():
   xl = win32com.client.Dispatch("Excel.Application")
   #预处理
   row_list = pretreatment(xl, begin_row, end_row, target_col, result_col)
+  # print row_list
   for k in row_list:
       my_do(row_list[k])
+
   #预跑十遍
   # run_times = 10
   # for i in range(run_times):
@@ -253,11 +275,26 @@ if __name__ == '__main__':
     # #main_simple()
     # end = time.clock()
     # print "time:%.03f\n"%(end-begin)
+
+    # begin = time.clock()
+    # #beginDate = "2016-2-25"
+    # #beginDate = "1900-1-1"
+    # basic_number = 42425
+    # endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+    # cur_days =  lib_help.datediff(beginDate,endDate)
+    # print "cur_days:%d\n"%(cur_days)
+    # end = time.clock()
+    # print "time:%.03f\n"%(end-begin)
+
+    # xl = win32com.client.Dispatch("Excel.Application")
+    # print xl.Range("F9").value
+
      my_init()
+
      while True:
          begin = time.clock()
          main()
          end = time.clock()
          print "time:%.03f\n"%(end-begin)
          print "end"
-         logging.info('run time:%.03f\n'%(end-begin))
+         #logging.info('run time:%.03f\n'%(end-begin))

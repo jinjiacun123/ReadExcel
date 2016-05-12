@@ -8,7 +8,7 @@ from config import Db_Connector
 #读取经济指标对应国家
 def get_eci_country(eci):
      f = Db_Connector("eci.ini")
-     return f.read('baseconf', eci)
+     return f.read('countryconf', eci)
 
 #读取经济指标对应标题
 def get_eci_title(eci):

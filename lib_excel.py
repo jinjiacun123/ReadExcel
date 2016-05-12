@@ -114,7 +114,7 @@ def excel_table_byindex_dynamic(file= 'get_rt_data.xls', colnameindex=0,by_index
     return list
 
 def excel_table_row_byindex_dynamic(xl, row_index):
-    col_title = ('A','B','C','D','E','F','G','H','I','J','K','K')
+    col_title = ('A','B','C','D','E','F','G','H','I','J','K')
     #print colnames[0]
     #print colnames
     # print work_book.Cells(3,1).value
@@ -134,7 +134,7 @@ def excel_table_row_byindex_dynamic(xl, row_index):
     except Exception,e:
         print e
         return {}
-    eci = eci[0:4]
+    eci = eci[0:-4]
     app = {}
     for i in range(0,len(col_title)):
         if('A' == col_title[i]):#eci
