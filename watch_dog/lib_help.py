@@ -22,22 +22,20 @@ def watch_excel_is_open():
 
 def watch_excel_is_run():
     xl = win32com.client.Dispatch("Excel.Application")
-    old_value = ''
-    new_value = ''
     is_get = False
     is_change = False
     #获取旧值
     while(False == is_get):
         try:
-            old_value = xl.Sheet("Sheet2").Range('K5').value
+            old_value = xl.sheets("Sheet2").Range('K3').value
+            print old_value
         except Exception,e:
             is_get = False
-            del old_value
             continue
         is_get = True
 
     #延长2秒
-    time.sleep(2)
+    time.sleep(1)
 
     index = 0
     while(index<=10):
@@ -45,10 +43,10 @@ def watch_excel_is_run():
         is_get = False
         while(False == is_get):
             try:
-                new_value =xl.Sheet("Sheet2").Range('K5').value
+               new_value =xl.sheets("Sheet2").Range('K3').value
+               print new_value
             except Exception,e:
                 is_get = False
-                del new_value
                 continue
             is_get = True
             if(new_value != old_value):
@@ -64,7 +62,6 @@ def watch_excel_is_run():
 
     del is_get
     del index
-    del is_change
     del xl
     gc.collect()
 
@@ -88,7 +85,8 @@ def watch_process_is_run(logging):
     else:
         print "Service " + ProcessName + " error ...!!!"
         logging.info('error:%s\n'%("Service " + ProcessName + " error ...!!!"))
-        os.startfile(ProgramPath)
+        print os.startfile(ProgramPath)
+        time.sleep(5)
     del CONFIGFILE
     del config
     del ProgramPath

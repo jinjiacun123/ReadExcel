@@ -10,18 +10,17 @@ from multiprocessing import Process, Queue
 import math
 import random
 import win32com.client
+import os
 
 #eursl
 reload(sys) 
 sys.setdefaultencoding("utf-8")
-#获取提交数据url
-url = lib_help.get_post_data_url()
-is_debug = False
 # whnd = ctypes.windll.kernel32.GetConsoleWindow()
 # if whnd != 0:  
 #     ctypes.windll.user32.ShowWindow(whnd, 0)  
 #     ctypes.windll.kernel32.CloseHandle(whnd)
-
+url = ''
+is_debug = True
 def my_do(row):
     csv_list =[]
     today = datetime.date.today()
@@ -201,7 +200,14 @@ def check_is_public(xl, target_row):
 
 #初始化
 def my_init():
+    global url,is_debug
     getpwd()
+    is_debug = bool(lib_help.get_is_debug())
+    print 'is_debug:%s\n'%(str(is_debug))
+    #获取提交数据url
+    if(is_debug == False):
+        url = lib_help.get_post_data_url()
+
     logging.basicConfig(level=logging.DEBUG,
                 format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                 datefmt='%a, %d %b %Y %H:%M:%S',

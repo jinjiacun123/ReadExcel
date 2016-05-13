@@ -24,6 +24,11 @@ def get_eci_rank(eci):
 def get_eci_unit(eci):
     f = Db_Connector("eci.ini")
     return f.read('unitconf', eci)
+    
+#读取是否调试
+def get_is_debug():
+    f = Db_Connector("my.ini")
+    return f.read('debugconf', 'is_debug')
 
 #写入经济指标发布时间
 def set_eci_date(eci,date):

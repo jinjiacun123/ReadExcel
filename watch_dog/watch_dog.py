@@ -29,6 +29,10 @@ def main():
     watch_process_is_run(logging)
 
 if __name__ == "__main__":
+    # import win32com
+    # xl = win32com.client.Dispatch("Excel.Application")
+    # print xl.Range('A4').value
+    # pass
     while True:
         main()
         gc.collect()
