@@ -41,6 +41,15 @@ def excel_table_byindex(file= 'get_rt_data.xls',colnameindex=0,by_index=0):
              index=index+1
     return list
 
+#获取指定行的数据
+def excel_table_get_unit(t_row, t_col, file='get_rt_data.xls'):
+    data = open_excel(file)
+    table = data.sheets()[0]
+    row = table.row_values(t_row)
+    return str(row[t_col]).strip()
+
+
+
 #初始化基本数据
 def excel_table_byindex_init_basicdata(file= 'get_rt_data.xls',colnameindex=0,by_index=0):
     data = open_excel(file)
@@ -245,11 +254,14 @@ def offer(queue, start_row, end_row):
 
 
 if __name__=="__main__":
-    begin = time.clock()
-    threads = []
-    rows = get_table_rows()
-    xl = win32com.client.Dispatch("Excel.Application")
-    work_book = xl
+    print excel_table_get_unit(3,0)
+    pass
+
+    # begin = time.clock()
+    # threads = []
+    # rows = get_table_rows()
+    # xl = win32com.client.Dispatch("Excel.Application")
+    # work_book = xl
     
     #queue = Queue()
     # step = 200
@@ -277,20 +289,20 @@ if __name__=="__main__":
     # for i in range(queue.qsize()):
     #     list.append(queue.get())
 
-    step = 50
-    start_row = 4
-    end_row = start_row+step
-    q = Queue()  
-    p_count = int(math.ceil((rows-3)/step))
-    print p_count
-    for i in range(p_count):
-        p = Process(target=offer, args=(q, start_row, end_row))  
-        p.start() 
-    
-
-
-    while True:
-        print q.get()
+    # step = 50
+    # start_row = 4
+    # end_row = start_row+step
+    # q = Queue()
+    # p_count = int(math.ceil((rows-3)/step))
+    # print p_count
+    # for i in range(p_count):
+    #     p = Process(target=offer, args=(q, start_row, end_row))
+    #     p.start()
+    #
+    #
+    #
+    # while True:
+    #     print q.get()
 
     # is_run  = True
     # 
@@ -310,5 +322,5 @@ if __name__=="__main__":
     #     main()
     #     time.sleep(3)
 
-    end = time.clock()
-    print "time:%.03f\n"%(end-begin)
+    # end = time.clock()
+    # print "time:%.03f\n"%(end-begin)

@@ -1,16 +1,113 @@
 # -*- coding: utf-8 -*-
+import logging
+import wmi
+import os
+import time
+import win32com
+import gc
+
+from ConfigParser import ConfigParser
 
 def watch_excel_is_open():
-    pass
+    xl = win32com.client.Dispatch("Excel.Application")
+    try:
+        xl.Range('A4').value
+    except Exception,e:
+        del xl
+        gc.collect()
+        return False
+    del xl
+    gc.collect()
+    return True
 
 def watch_excel_is_run():
-    pass
+    xl = win32com.client.Dispatch("Excel.Application")
+    old_value = ''
+    new_value = ''
+    is_get = False
+    is_change = False
+    #获取旧值
+    while(False == is_get):
+        try:
+            old_value = xl.Sheet("Sheet2").Range('K5').value
+        except Exception,e:
+            is_get = False
+            del old_value
+            continue
+        is_get = True
 
-def watch_process_is_run():
-    pass
+    #延长2秒
+    time.sleep(2)
+
+    index = 0
+    while(index<=10):
+        #获取新值
+        is_get = False
+        while(False == is_get):
+            try:
+                new_value =xl.Sheet("Sheet2").Range('K5').value
+            except Exception,e:
+                is_get = False
+                del new_value
+                continue
+            is_get = True
+            if(new_value != old_value):
+                del is_get
+                del is_change
+                del new_value
+                del old_value
+                del xl
+                gc.collect()
+                return True
+        time.sleep(1)
+        index = index +1
+
+    del is_get
+    del index
+    del is_change
+    del xl
+    gc.collect()
+
+    return is_change
+
+def watch_process_is_run(logging):
+    CONFIGFILE='./config.ini'
+    config = ConfigParser()
+    config.read(CONFIGFILE)
+    ProgramPath = config.get('MonitorProgramPath','ProgramPath')
+    ProcessName = config.get('MonitorProcessName','ProcessName')
+
+    c = wmi.WMI()
+    ProList = []             #如果在main()函数之外ProList 不会清空列表内容.
+    for process in c.Win32_Process():
+        ProList.append(str(process.Name))
+
+    if ProcessName in ProList:
+        print "Service " + ProcessName + " is running...!!!"
+        logging.info('info:%s\n'%("Service " + ProcessName + " is running...!!!"))
+    else:
+        print "Service " + ProcessName + " error ...!!!"
+        logging.info('error:%s\n'%("Service " + ProcessName + " error ...!!!"))
+        os.startfile(ProgramPath)
+    del CONFIGFILE
+    del config
+    del ProgramPath
+    del ProcessName
+    del c
+    del ProList
+    gc.collect()
 
 #发送警告
 def send_warning(type, title):
     type_list = ("Excel没打开","","")
     message = "故障:%s "%()
     pass
+
+def main():
+    #watch_process_is_run()
+    print watch_excel_is_open()
+
+if __name__ == "__main__":
+    while(True):
+        main()
+        time.sleep(3)

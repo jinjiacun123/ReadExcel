@@ -13,12 +13,7 @@ import win32com.client
 
 #eursl
 reload(sys) 
-sys.setdefaultencoding("utf-8") 
-logging.basicConfig(level=logging.DEBUG,
-                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                datefmt='%a, %d %b %Y %H:%M:%S',
-                filename='./log/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'_myapp'+str(random.uniform(1, 10))+'.log',
-                 filemode='w')
+sys.setdefaultencoding("utf-8")
 #获取提交数据url
 url = lib_help.get_post_data_url()
 is_debug = False
@@ -149,7 +144,7 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
   #计算从1900-1-1到当前的天数
   beginDate = "2016-2-25"
   endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
-  cur_days =  lib_help.datediff(beginDate,endDate)
+  cur_days =  lib_help.datediff_ex(beginDate,endDate)
   cur_days += 42425
 
   #查询所有和要求天数相同的所有经济指标的行号
@@ -199,13 +194,19 @@ def check_is_public(xl, target_row):
     cur_date = time.strftime('%Y-%m-%d',time.localtime(time.time()))
     # print 'cur_date:%s\n'%(cur_date)
     # print 'ini_eci_date:%s\n'%(ini_eci_date)
-    if(0 == lib_help.datediff(cur_date, ini_eci_date)):
+    if(0 == lib_help.datediff_ex(cur_date, ini_eci_date)):
         return True
     return False
 
 
 #初始化
 def my_init():
+    getpwd()
+    logging.basicConfig(level=logging.DEBUG,
+                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                datefmt='%a, %d %b %Y %H:%M:%S',
+                filename='./log/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'_myapp'+str(random.uniform(1, 10))+'.log',
+                 filemode='w')
     tables = lib_excel.excel_table_byindex_init_basicdata()
     country_l = {}
     rank_l = {}
@@ -260,7 +261,7 @@ def main():
   xl = win32com.client.Dispatch("Excel.Application")
   #预处理
   row_list = pretreatment(xl, begin_row, end_row, target_col, result_col)
-  # print row_list
+  #print row_list
   for k in row_list:
       my_do(row_list[k])
 
@@ -271,6 +272,12 @@ def main():
   #        data = lib_excel.excel_table_row_byindex_dynamic(xl, k)
   #        my_do(data)
 
+#改变当前执行路径
+def getpwd():
+    ddir = sys.path[0]
+    if os.path.isfile(ddir):
+        ddir,filen = os.path.split(ddir)
+    os.chdir(ddir)
 
 if __name__ == '__main__':
     # begin = time.clock()
@@ -291,7 +298,6 @@ if __name__ == '__main__':
 
     # xl = win32com.client.Dispatch("Excel.Application")
     # print xl.Range("F9").value
-
      my_init()
 
      while True:
