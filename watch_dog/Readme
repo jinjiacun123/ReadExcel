@@ -2,3 +2,5 @@
     监控目标进程
     监控excel是否掉线
     监控excel是否打开
+
+    打包命令:pyinstaller -F watch_dog.py --noconsole

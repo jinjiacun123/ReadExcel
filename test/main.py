@@ -29,8 +29,12 @@ class timer(threading.Thread): #The timer class is derived from the class thread
 
     def stop(self):
         self.thread_stop = True
+        
+    def re_start(self):
+        self.thread_stop = False
 
 def main():
+    import win32com.client
     xl = win32com.client.Dispatch("Excel.Application")
     #print type(xl)
     #print xl
@@ -66,12 +70,24 @@ def getpwd():
     os.chdir(ddir)
 
 if __name__ == "__main__":
-     getpwd()
-     logging.basicConfig(level=logging.DEBUG,
-                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                datefmt='%a, %d %b %Y %H:%M:%S',
-                filename='./log/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'_watch'+str(random.uniform(1, 10))+'.log',
-                 filemode='w')
+    thread1 = timer(1, 1)
+    thread1.start()
+    while True:
+#        x = input("x: ")
+#        if(1 == x):
+#            thread1.start()
+#            print 'start'
+#        else:
+#            thread1.stop()
+#            print 'stop'
+        time.sleep(5)
+    pass
+#     getpwd()
+#     logging.basicConfig(level=logging.DEBUG,
+#                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+#                datefmt='%a, %d %b %Y %H:%M:%S',
+#                filename='./log/'+time.strftime('%Y-%m-%d',time.localtime(time.time()))+'_watch'+str(random.uniform(1, 10))+'.log',
+#                 filemode='w')
 
     #xl = win32com.client.Dispatch("Excel.Application")
 
