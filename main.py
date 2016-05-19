@@ -22,9 +22,6 @@ sys.setdefaultencoding("utf-8")
 #     ctypes.windll.kernel32.CloseHandle(whnd)
 url = ''
 is_debug = True
-
-
-# noinspection PyInterpreter
 def my_do(row):
     csv_list =[]
     today = datetime.date.today()
@@ -270,15 +267,14 @@ def my_init():
     begin_row = 4
     target_col = 6
     result_col = 5
+    getpwd()
     end_row = lib_excel.get_table_rows()
     xl = win32com.client.Dispatch("Excel.Application")
-    getpwd()
     is_debug = bool(lib_help.get_is_debug())
     print 'is_debug:%s\n'%(str(is_debug))
     #获取提交数据url
     if(is_debug == False):
         url = lib_help.get_post_data_url()
-
     logging.basicConfig(level=logging.DEBUG,
                 format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                 datefmt='%a, %d %b %Y %H:%M:%S',
