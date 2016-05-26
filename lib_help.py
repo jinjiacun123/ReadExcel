@@ -24,6 +24,11 @@ def get_eci_rank(eci):
 def get_eci_unit(eci):
     f = Db_Connector("eci.ini")
     return f.read('unitconf', eci)
+
+#读取换算量
+def get_eci_opt(eci):
+     f = Db_Connector("eci.ini")
+     return f.read('optconf', eci)
     
 #读取是否调试
 def get_is_debug():
@@ -36,12 +41,13 @@ def set_eci_date(eci,date):
     f.write('baseconf', eci, date)
 
 #写入经济指标基本值
-def set_eci_basic(country_l, rank_l, title_l, unit_l):
+def set_eci_basic(country_l, rank_l, title_l, unit_l, opt_l):
     f = Db_Connector("eci.ini")
     f.mul_write('countryconf',country_l)
     f.mul_write('rankconf',rank_l)
     f.mul_write('titleconf', title_l)
     f.mul_write('unitconf', unit_l)
+    f.mul_write('optconf', opt_l)
 
 #查询经济指标发布时间
 def get_eci_date(eci):

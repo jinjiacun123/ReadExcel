@@ -93,6 +93,7 @@ def my_do(row):
     unit_list = unit_flag.split(' ')
     unit_flag = unit_list[0]
     unit_fmt  = lib_help.get_unit(unit_flag)
+    opt_var = lib_help.get_eci_opt(eci)
     if '' == unit_fmt:
         if('%' == unit_flag): 
             if(''!= before):
@@ -107,12 +108,16 @@ def my_do(row):
             prediction = prediction
     else:
         unit_fmt = float(unit_fmt)
+        opt_var = float(opt_var)
         if('' != before):
-            before = round(float(before)*unit_fmt,2)
+            #before = round(float(before)*unit_fmt,2)
+            before = round(float(before)*opt_var, 2)
         if('' != result):
-            result = round(float(result)*unit_fmt,2)
+            #result = round(float(result)*unit_fmt,2)
+            result = round(float(result)*opt_var,2)
         if('' != prediction):
-            prediction = round(float(prediction)*unit_fmt,2)
+            #prediction = round(float(prediction)*unit_fmt,2)
+            prediction = round(float(prediction)*opt_var,2)
      
     data = {'op':'addfinancedata',
           'content':title,
@@ -127,7 +132,10 @@ def my_do(row):
     logging.info('%s %s %s %s %s %s %s %s'%(eci, title, before ,prediction, result, country, rank, release_date))
      #提交测试环境
     if(is_debug == False):
-       print lib_help.eci_data_post(url, data)
+        try:
+            print lib_help.eci_data_post(url, data)
+        except Exception,e:
+            print e.message
     print 'send '+eci+"\n"
     if(is_debug == False):
       time.sleep(0.01)
@@ -266,7 +274,7 @@ def my_init():
     global begin_row,target_col,result_col
     begin_row = 4
     target_col = 6
-    result_col = 5
+    result_col = 5 
     getpwd()
     end_row = lib_excel.get_table_rows()
     xl = win32com.client.Dispatch("Excel.Application")
@@ -286,14 +294,16 @@ def my_init():
     rank_l = {}
     title_l = {}
     unit_l = {}
+    opt_l = {}
     for row in tables:
         eci = row[0]
         eci = eci[0:-4]
         unit_l[eci] = row[7]
-        country_l[eci] = row[8]
-        title_l[eci] = row[9]
-        rank_l[eci]  = row[10]
-    lib_help.set_eci_basic(country_l, rank_l, title_l, unit_l)
+        country_l[eci] = row[8] #国家
+        title_l[eci] = row[9]   #标题
+        rank_l[eci]  = row[10]  #星级
+        opt_l[eci]= row[12]     #换算量
+    lib_help.set_eci_basic(country_l, rank_l, title_l, unit_l, opt_l)
 
 def main_mul():
     #获取提交数据url
@@ -332,8 +342,8 @@ def main():
   global begin_row,target_col,result_col
 
   #预处理
-  #row_list = pretreatment(xl, begin_row, end_row, target_col, result_col)
-  row_list = pretreatment_v1(xl, begin_row, end_row, target_col, result_col)
+  row_list = pretreatment(xl, begin_row, end_row, target_col, result_col)
+  #row_list = pretreatment_v1(xl, begin_row, end_row, target_col, result_col)
   for k in row_list:
       my_do(row_list[k])
 
@@ -382,6 +392,7 @@ if __name__ == '__main__':
     # xl = win32com.client.Dispatch("Excel.Application")
     # print xl.Range("F9").value
      my_init()
+
 
      # begin = time.clock()
      # main()
