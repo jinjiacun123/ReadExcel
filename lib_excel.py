@@ -172,11 +172,29 @@ def excel_table_row_byindex_dynamic(xl, row_index):
         except Exception, e:
             print e
             return {}
+        if 'None' == app[i]:
+            app[i] = ''
     return app
     
     #print "%s\n"%(app[0])
     #endtime = datetime.datetime.now()
-    
+
+#get value of public 
+def excel_table_row_public_value(xl, row_index):
+    result = ''
+    try:
+        tag_title = 'E'+str(row_index)
+    except Exception, e:
+        print e
+    try:
+        result = str(xl.Range(tag_title).value).strip()
+    except Exception, e:
+        print e
+
+    if 'None' == result:
+        result = ''
+    return result
+
 def excel_table_check_today(xl):
     pass
 

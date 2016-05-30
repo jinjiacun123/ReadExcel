@@ -187,6 +187,59 @@ def pretreatment(xl, begin_row, end_row, target_col, result_col):
         line_no_list[i] = lib_excel.excel_table_row_byindex_dynamic(xl, i)
   return line_no_list
 
+'''预处理,获取当天需要处理的行数
+ (一天只跑一次，当天需要公布的数据；
+ 然后不停循环查找需要当天公布的公布值)
+'''
+def pretreatment_only_day(xl, begin_row, end_row, target_col, result_col):
+    global line_no_list
+    #计算从1900-1-1到当前的天数
+    beginDate = "2016-2-25"
+    endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+    cur_days =  lib_help.datediff_ex(beginDate,endDate)
+    cur_days += 42425
+    
+    
+    #判定是否是当天(yes)
+    if(cur_days == int(lib_help.get_curdays())):
+        #只跑当天需要的公布数据
+        for k in line_no_list:
+            #判定是否发布过
+            if(check_is_public(xl, k)):
+                continue
+            line_no_list[k][4] = lib_excel.excel_table_row_public_value(xl, k)
+                             #lib_excel.excel_table_row_byindex_dynamic(xl, k)
+    else:
+        lib_help.set_curdays(cur_days)
+        #获取当前需要跑的eci及其对应的行号        
+        for i in range(begin_row, end_row+1):
+            try:
+                days = str(xl.Cells(i, target_col).Value).strip()
+            except Exception,e:
+                print e
+                continue
+            if('' == days or \
+               '#N/A *The record could not be found'==days):
+                continue
+            try:
+                days = float(days)
+            except Exception,e:
+                continue
+            days = int(days)
+
+            if(cur_days == days):
+                try:
+                    result = str(xl.Cells(i, result_col).value).strip()
+                except Exception,e:
+                    continue
+                if('' == result):
+                    continue
+                #判定是否发布过
+                if(check_is_public(xl, i)):
+                    continue
+                line_no_list[i] = lib_excel.excel_table_row_byindex_dynamic(xl, i)
+    return line_no_list
+
 def pretreatment_v1(xl, begin_row, end_row, target_col, result_col):
   #计算从1900-1-1到当前的天数
   beginDate = "2016-2-25"
@@ -272,6 +325,8 @@ def check_is_public(xl, target_row):
 def my_init():
     global url,is_debug,xl,end_row
     global begin_row,target_col,result_col
+    global line_no_list
+    line_no_list = {}
     begin_row = 4
     target_col = 6
     result_col = 5 
@@ -280,6 +335,8 @@ def my_init():
     xl = win32com.client.Dispatch("Excel.Application")
     is_debug = bool(lib_help.get_is_debug())
     print 'is_debug:%s\n'%(str(is_debug))
+    #初始化当天，如果程序奔溃，再跑一次检测
+    lib_help.set_curdays(0)
     #获取提交数据url
     if(is_debug == False):
         url = lib_help.get_post_data_url()
@@ -342,7 +399,7 @@ def main():
   global begin_row,target_col,result_col
 
   #预处理
-  row_list = pretreatment(xl, begin_row, end_row, target_col, result_col)
+  row_list = pretreatment_only_day(xl, begin_row, end_row, target_col, result_col)
   #row_list = pretreatment_v1(xl, begin_row, end_row, target_col, result_col)
   for k in row_list:
       my_do(row_list[k])
@@ -400,6 +457,7 @@ if __name__ == '__main__':
      # print "time:%.03f\n"%(end-begin)
      # print "end"
 
+            
      while True:
          begin = time.clock()
          main()
@@ -409,4 +467,5 @@ if __name__ == '__main__':
          del end
          gc.collect()
          print "end"
+        
          #logging.info('run time:%.03f\n'%(end-begin))

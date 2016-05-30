@@ -35,6 +35,16 @@ def get_is_debug():
     f = Db_Connector("my.ini")
     return f.read('debugconf', 'is_debug')
 
+#读取当前日期
+def get_curdays():
+    f = Db_Connector("my.ini")
+    return f.read('otherconf', 'cur_days')
+
+#写入当前日期
+def set_curdays(cur_days):
+    f = Db_Connector("my.ini")
+    f.write('otherconf', 'cur_days', cur_days)
+
 #写入经济指标发布时间
 def set_eci_date(eci,date):
     f = Db_Connector("eci.ini")
