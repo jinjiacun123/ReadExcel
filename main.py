@@ -245,7 +245,6 @@ def pretreatment_v1(xl, begin_row, end_row, target_col, result_col):
   beginDate = "2016-2-25"
   endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
   cur_days =  lib_help.datediff_ex(beginDate,endDate)
-  del beginDate
   cur_days += 42425
 
   #查询所有和要求天数相同的所有经济指标的行号
@@ -259,34 +258,28 @@ def pretreatment_v1(xl, begin_row, end_row, target_col, result_col):
       return {}
   del tmp_tag
   i = begin_row
-  del begin_row
   for day in old_list:
     days = str(day[0]).strip()
     if('' == days or \
         '#N/A *The record could not be found'==days):
-        del days
         continue
     try:
         days = float(days)
     except Exception,e:
         # print e
-        del days
         continue
     days = int(days)
-
     if(cur_days == days):
+        print 'cur_days:%d\n'%(days)
         try:
             result = str(xl.Cells(i, result_col).value).strip()
         except Exception,e:
-            del days
             continue
-        if('' == result):
-            del days
+        if('' == result or \
+        '#N/A *The record could not be found' == result):
             continue
         #判定是否发布过
         if(check_is_public(xl, i)):
-            del result
-            del days
             continue
         line_no_list[i] = lib_excel.excel_table_row_byindex_dynamic(xl, i)
     i = i+1
