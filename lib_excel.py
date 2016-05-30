@@ -172,8 +172,8 @@ def excel_table_row_byindex_dynamic(xl, row_index):
         except Exception, e:
             print e
             return {}
-        if 'None' == app[i]:
-            app[i] = ''
+        #if 'None' == app[i]:
+        #    app[i] = ''
     return app
     
     #print "%s\n"%(app[0])
