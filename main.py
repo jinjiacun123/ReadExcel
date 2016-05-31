@@ -259,30 +259,31 @@ def pretreatment_v1(xl, begin_row, end_row, target_col, result_col):
   del tmp_tag
   i = begin_row
   for day in old_list:
+    cur_row = i
+    i = i + 1
     days = str(day[0]).strip()
     if('' == days or \
-        '#N/A *The record could not be found'==days):
+           '*The record could not be found' == days or \
+           '#N/A *The record could not be found' == days or \
+           '#N/A Access Denied: User req to PE(122)' == days or \
+           '#N/A Access Denied: User req to PE(5022)' == days):
         continue
     try:
-        days = float(days)
+        days = int(float(days))
     except Exception,e:
-        # print e
         continue
-    days = int(days)
     if(cur_days == days):
-        print 'cur_days:%d\n'%(days)
         try:
-            result = str(xl.Cells(i, result_col).value).strip()
+            result = str(xl.Cells(cur_row, result_col).value).strip()
         except Exception,e:
             continue
         if('' == result or \
         '#N/A *The record could not be found' == result):
             continue
         #判定是否发布过
-        if(check_is_public(xl, i)):
+        if(check_is_public(xl, cur_row)):
             continue
-        line_no_list[i] = lib_excel.excel_table_row_byindex_dynamic(xl, i)
-    i = i+1
+        line_no_list[cur_row] = lib_excel.excel_table_row_byindex_dynamic(xl, cur_row)
     del days
   del old_list
   return line_no_list
@@ -393,11 +394,20 @@ def main():
 
   #预处理
   #row_list = pretreatment_only_day(xl, begin_row, end_row, target_col, result_col)
-  row_list = pretreatment(xl, begin_row, end_row, target_col, result_col)
+
+  #分批次读取
+  row_list = pretreatment_v1(xl, begin_row, end_row, target_col, result_col)
+
+  #一次读取全部
+  # tmp_tag = "A%d:M%d"%(begin_row, end_row)
+  # row_list = list(xl.Range(tmp_tag).value)
+  # print row_list
+
   for k in row_list:
       my_do(row_list[k])
 
   del row_list
+
   #预跑十遍
   # run_times = 10
   # for i in range(run_times):

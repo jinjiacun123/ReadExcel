@@ -272,8 +272,17 @@ def offer(queue, start_row, end_row):
 
 
 if __name__=="__main__":
-    print excel_table_get_unit(3,0)
+    begin = time.clock()
+    xl = win32com.client.Dispatch("Excel.Application")
+    begin_row = 4
+    end_row = 4
+    tmp_tag = "A"+str(begin_row)+':M'+str(end_row)
+    all_value = xl.Range(tmp_tag).value
+    end = time.clock()
+    print "time:%.03f\n"%(end-begin)
     pass
+    #print excel_table_get_unit(3,0)
+    #pass
 
     # begin = time.clock()
     # threads = []
