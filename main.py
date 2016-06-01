@@ -319,8 +319,8 @@ def check_is_public(xl, target_row):
 def my_init():
     global url,is_debug,xl,end_row
     global begin_row,target_col,result_col
-    global line_no_list
-    line_no_list = {}
+#    global line_no_list
+#    line_no_list = {}
     begin_row = 4
     target_col = 6
     result_col = 5 
@@ -393,10 +393,10 @@ def main():
   global begin_row,target_col,result_col
 
   #预处理
-  row_list = pretreatment_only_day(xl, begin_row, end_row, target_col, result_col)
+  #row_list = pretreatment_only_day(xl, begin_row, end_row, target_col, result_col)
 
   #分批次读取
-  #row_list = pretreatment_v1(xl, begin_row, end_row, target_col, result_col)
+  row_list = pretreatment_v1(xl, begin_row, end_row, target_col, result_col)
 
   #一次读取全部
   # tmp_tag = "A%d:M%d"%(begin_row, end_row)
