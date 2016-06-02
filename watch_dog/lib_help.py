@@ -11,7 +11,7 @@ from ConfigParser import ConfigParser
 def watch_excel_is_open():
     xl = win32com.client.Dispatch("Excel.Application")
     try:
-        xl.Range('A4').value
+        xl.Sheets("Sheet1")
     except Exception,e:
         del xl
         gc.collect()
