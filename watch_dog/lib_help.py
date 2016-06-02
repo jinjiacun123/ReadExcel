@@ -86,6 +86,7 @@ def watch_process_is_run(logging):
         print "Service " + ProcessName + " error ...!!!"
         logging.info('error:%s\n'%("Service " + ProcessName + " error ...!!!"))
         print os.startfile(ProgramPath)
+        #send_warning(2)
         time.sleep(5)
     del CONFIGFILE
     del config
@@ -96,16 +97,34 @@ def watch_process_is_run(logging):
     gc.collect()
 
 #发送警告
-def send_warning(type, title):
-    type_list = ("Excel没打开","","")
-    message = "故障:%s "%()
-    pass
+def send_warning(type):
+    type_list = ("Excel没打开","Excel掉线","软件没打开或者奔溃")
+    message = "%s "%(type_list[type])
+    call_wx(u'快讯-经济指标监控', unicode(message, 'utf-8'))
+
+#调用微信报警
+def call_wx(e_type, e_description):
+    from suds.client import Client
+    url = 'http://112.84.186.217:8022/WeChatMonitoringService.WeChatService.svc?WSDL'
+    r_password = 'zjzx2015'
+    r_time = time.strftime('%Y-%m-%d %H:%M',time.localtime(time.time()))
+    client=Client(url)
+    result = client.service.KxOperation(r_password, e_type, e_description, r_time)
+    print result
 
 def main():
     #watch_process_is_run()
     print watch_excel_is_open()
 
 if __name__ == "__main__":
+    title = '我的测试'
+    content = '测试内容'
+   # title = title.encode('utf-8')
+   # content = content.encode('utf-8')
+    call_wx(unicode(title, 'utf-8'), unicode(content, 'utf-8'))
+    pass
+    '''
     while(True):
         main()
         time.sleep(3)
+    '''

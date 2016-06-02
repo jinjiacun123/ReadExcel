@@ -5,8 +5,8 @@ import lib_help
 import lib_excel
 import sys
 import logging
-import ctypes  
-from multiprocessing import Process, Queue 
+import ctypes
+from multiprocessing import Process, Queue
 import math
 import random
 import win32com.client
@@ -14,18 +14,18 @@ import os
 import gc
 
 #eursl
-reload(sys) 
+reload(sys)
 sys.setdefaultencoding("utf-8")
 # whnd = ctypes.windll.kernel32.GetConsoleWindow()
-# if whnd != 0:  
-#     ctypes.windll.user32.ShowWindow(whnd, 0)  
+# if whnd != 0:
+#     ctypes.windll.user32.ShowWindow(whnd, 0)
 #     ctypes.windll.kernel32.CloseHandle(whnd)
 url = ''
 is_debug = True
 def my_do(row):
     csv_list =[]
     today = datetime.date.today()
-    
+
     #读取经济指标
     try:
         eci = row[0]
@@ -50,7 +50,7 @@ def my_do(row):
     or tmp_time[1]!= today.month \
     or tmp_time[2]!= today.day):
         return
-     
+
     #查询更新时间是否改变
     if('#N/A'==row[6] or '*The record could not be found'==row[6]):
         if('' == row[5]):
@@ -59,18 +59,18 @@ def my_do(row):
            r = float(row[5])
     else:
        try:
-        r = float(row[5]) + float(row[6]) 
+        r = float(row[5]) + float(row[6])
        except Exception, e:
          return
     tmp_date = lib_help.format_excel_date(r)
     release_date = str(tmp_date[0])+'-'+str(tmp_date[1])+'-'+str(tmp_date[2]) \
                   +' '+str(tmp_date[3])+':'+str(tmp_date[4])+':'+str(tmp_date[5])
-                     
+
     if(lib_help.get_eci_date(eci) == release_date):
         return
     else:
         lib_help.set_eci_date(eci, release_date)
-           
+
     #查询对应国家及其标题
     title   = row[9]
     country = row[8]
@@ -85,17 +85,17 @@ def my_do(row):
 
     #周期获取及其格式化标题
     cycle_flag = row[1]
-    cycle_fmt = lib_help.get_cycle(cycle_flag)  
+    cycle_fmt = lib_help.get_cycle(cycle_flag)
     title = country+cycle_fmt+title
-      
+
     #计量单位获取及其计算对应值
-    unit_flag = row[7] 
+    unit_flag = row[7]
     unit_list = unit_flag.split(' ')
     unit_flag = unit_list[0]
     unit_fmt  = lib_help.get_unit(unit_flag)
     opt_var = lib_help.get_eci_opt(eci)
     if '' == unit_fmt:
-        if('%' == unit_flag): 
+        if('%' == unit_flag):
             if(''!= before):
                 before = before+unit_flag
             if(''!=result):
@@ -118,17 +118,17 @@ def my_do(row):
         if('' != prediction):
             #prediction = round(float(prediction)*unit_fmt,2)
             prediction = round(float(prediction)*opt_var,2)
-     
+
     data = {'op':'addfinancedata',
           'content':title,
           'before':before,
           'prediction':prediction,
           'result':result,
           'country':country,
-          'rank':rank,                       
+          'rank':rank,
         }
-       
-       
+
+
     logging.info('%s %s %s %s %s %s %s %s'%(eci, title, before ,prediction, result, country, rank, release_date))
      #提交测试环境
     if(is_debug == False):
@@ -143,7 +143,7 @@ def my_do(row):
     #加入数据到csv
     if(is_debug == True):
       csv_list.append([title,before,prediction,result,country,rank])
-     
+
     if(is_debug == True):
       lib_help.write_csv("my.csv", csv_list)
 
@@ -198,8 +198,8 @@ def pretreatment_only_day(xl, begin_row, end_row, target_col, result_col):
     endDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
     cur_days =  lib_help.datediff_ex(beginDate,endDate)
     cur_days += 42425
-    
-    
+
+
     #判定是否是当天(yes)
     if(cur_days == int(lib_help.get_curdays())):
         #只跑当天需要的公布数据
@@ -211,7 +211,7 @@ def pretreatment_only_day(xl, begin_row, end_row, target_col, result_col):
                              #lib_excel.excel_table_row_byindex_dynamic(xl, k)
     else:
         lib_help.set_curdays(cur_days)
-        #获取当前需要跑的eci及其对应的行号        
+        #获取当前需要跑的eci及其对应的行号
         for i in range(begin_row, end_row+1):
             try:
                 days = str(xl.Cells(i, target_col).Value).strip()
@@ -323,7 +323,7 @@ def my_init():
 #    line_no_list = {}
     begin_row = 4
     target_col = 6
-    result_col = 5 
+    result_col = 5
     getpwd()
     end_row = lib_excel.get_table_rows()
     xl = win32com.client.Dispatch("Excel.Application")
@@ -366,20 +366,20 @@ def main_mul():
     step =200
     start_row = 4
     end_row = start_row+step
-    q = Queue()  
+    q = Queue()
     p_count = int(math.ceil((rows*1.0)/step))
-    # p = Process(target=lib_excel.offer, args=(q, start_row, end_row))  
-    # p.start() 
+    # p = Process(target=lib_excel.offer, args=(q, start_row, end_row))
+    # p.start()
     for i in range(p_count):
-        p = Process(target=lib_excel.offer, args=(q, start_row, end_row))  
-        p.start() 
+        p = Process(target=lib_excel.offer, args=(q, start_row, end_row))
+        p.start()
         #print "start:%d,end:%d\n"%(start_row, end_row)
-        start_row = end_row +1 
+        start_row = end_row +1
         end_row = start_row + step
         if(end_row>=rows):
           end_row = rows
 
-    
+
     while True:
         my_data = q.get()
         #my_do(my_data)
@@ -422,7 +422,7 @@ def main():
 #3.在指定时间获取预期和前值;
 #4.在准点没获取到公布值后,延迟指定时间段获取公布值,还是获取不到就放弃;
 def main_v1():
-    
+
     pass
 
 #改变当前执行路径
