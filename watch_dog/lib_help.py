@@ -5,6 +5,7 @@ import os
 import time
 import win32com
 import gc
+import string
 
 from ConfigParser import ConfigParser
 
@@ -33,7 +34,11 @@ def watch_excel_is_run():
             is_get = False
             continue
         is_get = True
-
+    try:
+        float(old_value)
+    except Exception,e:
+        return False
+    #if old_value == 'Not Signed In':
     #延长2秒
     time.sleep(1)
 
@@ -49,6 +54,11 @@ def watch_excel_is_run():
                 is_get = False
                 continue
             is_get = True
+            #if new_value == 'Not Signed In':
+            try:
+                float(new_value)
+            except Exception,e:
+                return False
             if(new_value != old_value):
                 del is_get
                 del is_change
@@ -65,7 +75,7 @@ def watch_excel_is_run():
     del xl
     gc.collect()
 
-    return is_change
+    return True
 
 def watch_process_is_run(logging):
     CONFIGFILE='./config.ini'
